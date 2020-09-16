@@ -87,6 +87,8 @@ typedef struct{
   int16_t   cmd2;
   int16_t   speedR_meas;
   int16_t   speedL_meas;
+  int16_t   pwm_left;
+  int16_t   pwm_right;
   int16_t   batVoltage;
   int16_t   boardTemp;
   uint16_t 	cmdLed;
@@ -219,6 +221,8 @@ int main(void) {
         Feedback.cmd2           = (int16_t)cmd2;
         Feedback.speedR_meas	  = (int16_t)rtY_Right.n_mot;
         Feedback.speedL_meas	  = (int16_t)rtY_Left.n_mot;
+        Feedback.pwm_left       = (int16_t)pwml;
+        Feedback.pwm_right      = (int16_t)pwmr;
         Feedback.batVoltage	    = (int16_t)(batVoltage * BAT_CALIB_REAL_VOLTAGE / BAT_CALIB_ADC);
         Feedback.boardTemp	    = (int16_t)board_temp_deg_c;
 
@@ -226,7 +230,7 @@ int main(void) {
           if(__HAL_DMA_GET_COUNTER(huart2.hdmatx) == 0) {
             Feedback.cmdLed         = (uint16_t)sideboard_leds_L;
             Feedback.checksum       = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas 
-                                               ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
+                                               ^ Feedback.pwm_left ^ Feedback.pwm_right ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
 
             HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&Feedback, sizeof(Feedback));
           }
